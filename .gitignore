@@ -1,0 +1,7 @@
+/env/
+/development/
+/static/
+/sms/.env
+/db.sqlite3
+
+__pycache__/

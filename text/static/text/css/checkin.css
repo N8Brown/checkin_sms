@@ -1,0 +1,85 @@
+header {
+    /* background-color: #7f0518; */
+    background: radial-gradient(circle, #A40E1A, #7f0518);
+}
+
+footer {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fjalla One', sans-serif;
+    /* font-family: 'Bebas Neue', cursive; */
+    letter-spacing: .01em;
+    line-height: 1em;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+p {
+    font-family: 'Libre Franklin', sans-serif;
+}
+
+ul {
+    list-style: none;
+    /* padding: 0; */
+}
+
+li {
+    font-family: 'Fjalla One', sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    line-height: 1em;
+    padding-bottom: 1em;
+}
+
+li  a {
+    color: inherit;
+    text-decoration: none;
+}
+
+li a:hover {
+    color: rgba(255,255,255,.5);
+}
+
+.Header-branding-logo {
+    max-width: 100%;
+}
+
+.topic-icon {
+    max-width: 100px;
+}
+
+.btn-red {
+    color: #ffffff;
+    background-color: #7f0518;
+    border-radius: 0;
+    padding: 1rem 2rem;
+    font-family: 'Libre Franklin';
+    font-size: 15px;
+}
+
+.btn-red:hover {
+    opacity: .8;
+    color: #ffffff;
+}
+
+.form-control {
+    border-radius: 0;
+    padding: 1rem;
+}
+
+@media only screen and (min-width: 600px){
+    h2 {
+        font-size: 3rem;
+    }
+
+    .Header-branding-logo {
+        max-width: 279px;
+    }
+} 
