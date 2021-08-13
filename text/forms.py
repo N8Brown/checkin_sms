@@ -1,9 +1,9 @@
 from django import forms
-from .models import Phone
+from .models import Client
 
-class PhoneForm(forms.ModelForm):
+class ClientForm(forms.ModelForm):
     class Meta:
-        model = Phone
+        model = Client
         fields = ['first_name', 'last_name', 'email', 'phone']
 
     def clean_phone(self):

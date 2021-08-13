@@ -1,0 +1,50 @@
+{% extends 'text/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="row justify-content-center pt-5">
+    <article class="col-md-6">
+        <div class="row justify-content-center p-3">
+            <img class="form-logo" src="{% static 'text/img/message-app.png' %}" alt="Cell phone with text message bubble">
+        </div>
+        <div class="row p-3">
+            <p>Fill out the form below to sign up for regular check-ins via text.</p>
+        </div>
+        {% if form.errors %}
+            {% if form.phone.errors %}
+                <div class="row p-3 alert alert-danger alert-dismissible fade show" role="alert">
+                    <p>The phone number, {{form.phone.value}}, is already registered. Please enter a different phone number.</p> 
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% else %}
+                <div class="row p-3 alert alert-danger alert-dismissible fade show" role="alert">
+                    <p>An error prevented the phone number from being saved properly. Please try again.</p> 
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div>
+            <form class="container text-center" method="POST">
+                {% csrf_token %}
+
+                <div class="row mb-3">
+                    <input type="text" class="form-control" placeholder="First name" name="first_name" aria-label="First name" value="{% if form %}{{form.first_name.value}}{% endif %}" required>
+                </div>
+                <div class="row mb-3">
+                    <input type="text" class="form-control" placeholder="Last name" name="last_name" aria-label="Last name" value="{% if form %}{{form.last_name.value}}{% endif %}" required>
+                </div>
+                <div class="row mb-3">
+                    <input type="email" class="form-control" placeholder="Email Address" name="email" aria-label="Email Address" value="{% if form %}{{form.email.value}}{% endif %}" required>
+                </div>
+                <div class="row mb-3">
+                    <input type="tel" class="form-control" placeholder="Phone Number" name="phone" aria-label="Phone Number" pattern="^[(]{0,1}[0-9]{3}[)]{0,1}[-\s.]{0,1}[0-9]{3}[-\s.]{0,1}[0-9]{4}$" value="{% if form %}{{form.phone.value}}{% endif %}" required>
+                </div>
+                <button type="submit" class="btn btn-secondary m-4">SIGN UP</button>
+            </form>
+        </div>
+    </article>
+</section>
+
+{% endblock %}

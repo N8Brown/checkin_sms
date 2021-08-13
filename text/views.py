@@ -6,10 +6,43 @@ from django_twilio.decorators import twilio_view
 from functools import wraps
 from twilio import twiml
 from twilio.request_validator import RequestValidator
-from .forms import PhoneForm
-from .models import Phone
+from .forms import ClientForm
+from .models import Client
 
 import os
+
+
+def home(request):
+    return render(request, 'text/checkinsms.html', {})
+
+
+def client_form(request):
+    if request.method == 'POST':
+        print(request.POST)
+        form = ClientForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+            phone_list = Client.objects.filter(is_active=True)
+            context = {
+                'phone_list':phone_list,
+            }
+
+            return redirect('client_confirmation')
+        else:
+            context = {
+                'form':form,
+            }
+            return render(request, 'text/client_form.html', context)
+    else:
+        context = {}
+        return render(request, 'text/client_form.html', context)
+    
+
+
+def client_form_confirmation(request):
+    context = {}
+    return render(request, 'text/client_confirmation.html', context)
+
 
 
 def validate_twilio_request(func):
