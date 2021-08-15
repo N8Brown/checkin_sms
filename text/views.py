@@ -155,7 +155,7 @@ def incoming(request):
     user_reply = request.POST.get('Body')
     user_phone = request.POST.get('From')
 
-    user = Phone.objects.filter(phone=user_phone)
+    user = Client.objects.filter(phone=user_phone)
 
     if user:
         if user_reply.lower() == 'y' or user_reply.lower() == 'yes':
