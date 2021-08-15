@@ -9,16 +9,16 @@
             <img class="form-logo" src="{% static 'text/img/message-app.png' %}" alt="Cell phone with text message bubble">
         </div>
         <div class="row p-3">
-            <p>Fill out the form below to sign up for regular check-ins via text.</p>
+            <p>Fill out the form below to sign up for regular check-ins via text message.</p>
         </div>
         {% if form.errors %}
             {% if form.phone.errors %}
-                <div class="row p-3 alert alert-danger alert-dismissible fade show" role="alert">
+                <div class="row p-3 mx-3 alert alert-danger alert-dismissible fade show" role="alert">
                     <p>The phone number, {{form.phone.value}}, is already registered. Please enter a different phone number.</p> 
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% else %}
-                <div class="row p-3 alert alert-danger alert-dismissible fade show" role="alert">
+                <div class="row p-3 mx-3 alert alert-danger alert-dismissible fade show" role="alert">
                     <p>An error prevented the phone number from being saved properly. Please try again.</p> 
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
