@@ -1,27 +1,34 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django_twilio.decorators import twilio_view
 from functools import wraps
-from twilio import twiml
+# from twilio import twiml
 from twilio.request_validator import RequestValidator
-from .forms import ClientForm
+from .forms import ClientForm, UserRegistrationForm
 from .models import Client
 
 import os
 
 
 def home(request):
-    context = {}
-    return render(request, 'text/checkinsms.html', context)
+    if request.user.is_authenticated:
+        return redirect('user_dashboard', request.user.username.lower())
+    else:
+        context = {}
+        return render(request, 'text/checkinsms.html', context)
 
 
 def user_register(request):
-    context = {}
+    
+    form = UserRegistrationForm
+    context = {
+        'form': form,
+    }
     return render(request, 'text/register.html', context)
 
 
@@ -41,7 +48,7 @@ def user_login(request):
 
     else:
         if request.user.is_authenticated:
-            return redirect('home')
+            return redirect('user_dashboard', request.user.username.lower())
         else:
             context = {}            
             return render(request, 'text/login.html', context)
@@ -54,10 +61,12 @@ def user_logout(request):
 
 @login_required
 def user_dashboard(request, username):
-    current_user = request.user
-    if current_user.username == username:
-        context = {}
-        return render(request, 'text/dashboard.html', context)
+    if request.user.is_authenticated:
+        if request.user.username == username:
+            context = {}
+            return render(request, 'text/dashboard.html', context)
+        else:
+            return redirect('user_dashboard', request.user.username.lower())
     else:
         return redirect('user_login')
 
@@ -81,7 +90,7 @@ def client_form(request):
             return render(request.lower(), 'text/client_form.html', context)
     else:
         context = {}
-        return render(request.lower(), 'text/client_form.html', context)
+        return render(request, 'text/client_form.html', context)
     
 
 
