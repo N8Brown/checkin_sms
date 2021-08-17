@@ -1,15 +1,103 @@
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django_twilio.decorators import twilio_view
 from functools import wraps
-from twilio import twiml
+# from twilio import twiml
 from twilio.request_validator import RequestValidator
-from .forms import PhoneForm
-from .models import Phone
+from .forms import ClientForm, UserRegistrationForm
+from .models import Client
 
 import os
+
+
+def home(request):
+    if request.user.is_authenticated:
+        return redirect('user_dashboard', request.user.username.lower())
+    else:
+        context = {}
+        return render(request, 'text/checkinsms.html', context)
+
+
+def user_register(request):
+    
+    form = UserRegistrationForm
+    context = {
+        'form': form,
+    }
+    return render(request, 'text/register.html', context)
+
+
+def user_login(request):
+    
+    if request.method == "POST":
+        username = request.POST['login_username']
+        password = request.POST['login_password']
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('user_dashboard', user.username.lower())
+        else:
+            messages.warning(request, ('Username or password is incorrect. Please try again.'))
+            return redirect('user_login')
+
+    else:
+        if request.user.is_authenticated:
+            return redirect('user_dashboard', request.user.username.lower())
+        else:
+            context = {}            
+            return render(request, 'text/login.html', context)
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('home')
+
+
+@login_required
+def user_dashboard(request, username):
+    if request.user.is_authenticated:
+        if request.user.username == username:
+            context = {}
+            return render(request, 'text/dashboard.html', context)
+        else:
+            return redirect('user_dashboard', request.user.username.lower())
+    else:
+        return redirect('user_login')
+
+
+def client_form(request):
+    if request.method == 'POST':
+        print(request.POST)
+        form = ClientForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+            phone_list = Client.objects.filter(is_active=True)
+            context = {
+                'phone_list':phone_list,
+            }
+
+            return redirect('client_confirmation')
+        else:
+            context = {
+                'form':form,
+            }
+            return render(request.lower(), 'text/client_form.html', context)
+    else:
+        context = {}
+        return render(request, 'text/client_form.html', context)
+    
+
+
+def client_form_confirmation(request):
+    context = {}
+    return render(request, 'text/client_confirmation.html', context)
+
 
 
 def validate_twilio_request(func):
@@ -37,35 +125,34 @@ def validate_twilio_request(func):
 
 
 
-def checkin(request):
-    if request.method == 'POST':
-        print(request.POST)
-        form = PhoneForm(request.POST or None)
-        if form.is_valid():
-            form.save()
-            # Use success message until Confirmation template is created, then redirect to Confirmation page.
-            messages.success(request, ('Your phone number has been successfully added to the list!'))
+# def checkin(request):
+#     if request.method == 'POST':
+#         print(request.POST)
+#         form = PhoneForm(request.POST or None)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, ('Your phone number has been successfully added to the list!'))
 
-            phone_list = Phone.objects.filter(is_active=True)
-            context = {
-                'phone_list':phone_list,
-            }
+#             phone_list = Phone.objects.filter(is_active=True)
+#             context = {
+#                 'phone_list':phone_list,
+#             }
 
-            return redirect(checkin)
-        else:
-            phone_list = Phone.objects.filter(is_active=True)
-            context = {
-                'form':form,
-                'phone_list':phone_list,
-            }
-            return render(request, 'text/checkin.html', context)
+#             return redirect(checkin)
+#         else:
+#             phone_list = Phone.objects.filter(is_active=True)
+#             context = {
+#                 'form':form,
+#                 'phone_list':phone_list,
+#             }
+#             return render(request, 'text/checkin.html', context)
 
-    else:
-        phone_list = Phone.objects.filter(is_active=True)
-        context = {
-            'phone_list':phone_list,
-        }
-        return render(request, 'text/checkin.html', context)
+#     else:
+#         phone_list = Phone.objects.filter(is_active=True)
+#         context = {
+#             'phone_list':phone_list,
+#         }
+#         return render(request, 'text/checkin.html', context)
 
 
 
@@ -77,7 +164,7 @@ def incoming(request):
     user_reply = request.POST.get('Body')
     user_phone = request.POST.get('From')
 
-    user = Phone.objects.filter(phone=user_phone)
+    user = Client.objects.filter(phone=user_phone)
 
     if user:
         if user_reply.lower() == 'y' or user_reply.lower() == 'yes':

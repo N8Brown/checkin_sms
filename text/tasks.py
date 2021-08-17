@@ -5,7 +5,7 @@ from twilio.rest import Client
 import os
 
 
-def daily_text():    
+def auto_text():    
     phone_list = Phone.objects.filter(is_active=True)
 
     account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
