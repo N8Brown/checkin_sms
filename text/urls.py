@@ -9,7 +9,8 @@ urlpatterns = [
     path('login/', views.user_login, name='user_login'),
     path('logout/', views.user_logout, name='user_logout'),
     path('<username>/dashboard/', views.user_dashboard, name='user_dashboard'),
-    path('beta-test/', views.client_form, name='client_form'),
+    # path('beta-test/', views.client_form, name='client_form'),
+    path('<username>/signup/', views.client_form, name='client_form'),
     path('confirmation/', views.client_form_confirmation, name='client_confirmation'),
     path('incoming', views.incoming, name='incoming'),
 ]

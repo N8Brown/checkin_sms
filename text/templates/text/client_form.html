@@ -29,7 +29,7 @@
             <form class="container text-center" method="POST">
                 {% csrf_token %}
 
-                <div class="row mb-3">
+                <!-- <div class="row mb-3">
                     <input type="text" class="form-control" placeholder="First name" name="first_name" aria-label="First name" value="{% if form %}{{form.first_name.value}}{% endif %}" required>
                 </div>
                 <div class="row mb-3">
@@ -40,9 +40,12 @@
                 </div>
                 <div class="row mb-3">
                     <input type="tel" class="form-control" placeholder="Phone Number" name="phone" aria-label="Phone Number" pattern="^[(]{0,1}[0-9]{3}[)]{0,1}[-\s.]{0,1}[0-9]{3}[-\s.]{0,1}[0-9]{4}$" value="{% if form %}{{form.phone.value}}{% endif %}" required>
-                </div>
+                </div> -->
+                {{form.as_p}}
+                <input type="hidden" name="user" value="{% if username %}{{username}}{% endif %}">
                 <button type="submit" class="btn btn-secondary m-4">SIGN UP</button>
             </form>
+
         </div>
     </article>
 </section>

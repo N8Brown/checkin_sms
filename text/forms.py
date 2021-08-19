@@ -1,6 +1,8 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from django.forms import widgets
+from django.forms.widgets import HiddenInput, TextInput
 from .models import Client
 
 
@@ -34,6 +36,11 @@ class UserRegistrationForm(UserCreationForm):
 
 
 class ClientForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=100, widget=TextInput(attrs={'class':'form-control', 'placeholder':'First Name', 'name':'first_name', 'aria-label':'First Name', 'required':'',}), label='')
+    last_name = forms.CharField(max_length=100, widget=TextInput(attrs={'class':'form-control', 'placeholder':'Last Name', 'name':'last_name', 'aria-label':'Last Name', 'required':'',}), label='')
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control', 'placeholder':'Email Address', 'name':'email', 'aria-label':'Email Address', 'required':'',}), label='')
+    phone = forms.CharField(max_length=100, widget=TextInput(attrs={'class':'form-control', 'placeholder':'Phone Number', 'name':'phone', 'aria-label':'Phone Number', 'pattern':'^[(]{0,1}[0-9]{3}[)]{0,1}[-\s.]{0,1}[0-9]{3}[-\s.]{0,1}[0-9]{4}$'}), label='')
+
     class Meta:
         model = Client
         fields = ('first_name', 'last_name', 'email', 'phone',)

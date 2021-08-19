@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-# from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
@@ -24,12 +24,27 @@ def home(request):
 
 
 def user_register(request):
-    
-    form = UserRegistrationForm
-    context = {
-        'form': form,
-    }
-    return render(request, 'text/register.html', context)
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('user_dashboard', username.lower())
+        else:
+            messages.warning(request, ('There is an error...'))
+            context = {
+                'form': form,
+            }
+            return render(request, 'text/register.html', context)
+    else:
+        form = UserRegistrationForm()
+        context = {
+            'form': form,
+        }
+        return render(request, 'text/register.html', context)
 
 
 def user_login(request):
@@ -71,7 +86,7 @@ def user_dashboard(request, username):
         return redirect('user_login')
 
 
-def client_form(request):
+def client_form(request, username):
     if request.method == 'POST':
         print(request.POST)
         form = ClientForm(request.POST or None)
@@ -87,10 +102,17 @@ def client_form(request):
             context = {
                 'form':form,
             }
-            return render(request.lower(), 'text/client_form.html', context)
+            return render(request, 'text/client_form.html', context)
     else:
-        context = {}
-        return render(request, 'text/client_form.html', context)
+        if User.objects.filter(username=username, is_staff=False):
+            form = ClientForm()
+            context = {
+                'username':username,
+                'form':form,
+            }
+            return render(request, 'text/client_form.html', context)
+        else:
+            return redirect('home')
     
 
 
