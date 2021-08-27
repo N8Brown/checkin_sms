@@ -1,0 +1,17 @@
+{% extends 'text/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="row text-center">
+    <h1>Edit Profile</h1>
+</div>
+
+<form class="col-md-6 offset-md-3" action="{% url 'user_edit_user' %}" method="POST">
+    {% csrf_token %}        
+    {{ form.as_p }}
+    <input class="btn btn-primary" type="submit" value="Save Changes">
+    <input class="btn btn-secondary" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
+</form>
+
+{% endblock %}

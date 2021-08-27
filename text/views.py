@@ -9,15 +9,19 @@ from django_twilio.decorators import twilio_view
 from functools import wraps
 # from twilio import twiml
 from twilio.request_validator import RequestValidator
-from .forms import ClientForm, UserRegistrationForm
-from .models import Client
+from twilio.rest import Client
+from .forms import UserClientForm, UserRegistrationForm, UserEditUserForm
+from .models import UserClient, UserProfile
 
 import os
 
 
 def home(request):
     if request.user.is_authenticated:
-        return redirect('user_dashboard', request.user.username.lower())
+        if not request.user.is_staff:
+            return redirect('user_dashboard')
+        else:
+            return redirect('admin/')
     else:
         context = {}
         return render(request, 'text/checkinsms.html', context)
@@ -32,6 +36,11 @@ def user_register(request):
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
             login(request, user)
+
+            user_url = f'https://checkinsms.com/{username.lower()}/signup'
+            profile = UserProfile(user=user, user_url=user_url)
+            profile.save()
+
             return redirect('user_dashboard', username.lower())
         else:
             messages.warning(request, ('There is an error...'))
@@ -56,14 +65,14 @@ def user_login(request):
 
         if user is not None:
             login(request, user)
-            return redirect('user_dashboard', user.username.lower())
+            return redirect('user_dashboard')
         else:
             messages.warning(request, ('Username or password is incorrect. Please try again.'))
             return redirect('user_login')
 
     else:
         if request.user.is_authenticated:
-            return redirect('user_dashboard', request.user.username.lower())
+            return redirect('user_dashboard')
         else:
             context = {}            
             return render(request, 'text/login.html', context)
@@ -75,24 +84,85 @@ def user_logout(request):
 
 
 @login_required
-def user_dashboard(request, username):
+def user_dashboard(request):
     if request.user.is_authenticated:
-        if request.user.username == username:
-            context = {}
+        if not request.user.is_staff:
+            user = User.objects.get(username=request.user.username)
+            user_profile = UserProfile.objects.get(user=request.user)
+            client_list = UserClient.objects.filter(client_of=request.user.username)
+
+            context = {
+                'user':user,
+                'user_profile':user_profile,
+                'client_list':client_list,
+            }
             return render(request, 'text/dashboard.html', context)
         else:
-            return redirect('user_dashboard', request.user.username.lower())
+            return redirect('home')
+
     else:
         return redirect('user_login')
+
+
+@login_required
+def user_edit_user(request):
+    if request.user.is_authenticated:
+        if not request.user.is_staff:
+            if request.method == 'POST':
+                form = UserEditUserForm(request.POST, instance=request.user,)
+                form.save()
+                return redirect('user_dashboard')
+            else:
+                form = UserEditUserForm(instance=request.user)
+                context = {
+                    'form':form,
+                }
+                return render(request, 'text/edit_user.html', context)
+
+        else:
+            return redirect('home')
+
+    else:
+        return redirect('user_login')
+
+
+@login_required
+def user_add_phone(request):
+    if request.user.is_authenticated:
+
+        if not request.user.is_staff:
+            if request.method == 'POST':
+                account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+                auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+                client = Client(account_sid, auth_token)
+                local = client.available_phone_numbers('US').local.list(area_code=int(request.POST['area_code']), limit=10)
+
+                available_numbers = [record.friendly_name for record in local]
+                # for record in local:
+                #     print(record.friendly_name)
+                context = {
+                    'available_numbers':available_numbers,
+                }
+
+                return render(request, 'text/add_phone.html', context)
+            else:
+                context = {}
+                return render(request, 'text/add_phone.html', context)
+        else:
+            return redirect('home')
+    else:
+        return redirect('user_login')
+
+
 
 
 def client_form(request, username):
     if request.method == 'POST':
         print(request.POST)
-        form = ClientForm(request.POST or None)
+        form = UserClientForm(request.POST or None)
         if form.is_valid():
             form.save()
-            phone_list = Client.objects.filter(is_active=True)
+            phone_list = UserClient.objects.filter(is_active=True)
             context = {
                 'phone_list':phone_list,
             }
@@ -100,12 +170,13 @@ def client_form(request, username):
             return redirect('client_confirmation')
         else:
             context = {
+                'username':username,
                 'form':form,
             }
             return render(request, 'text/client_form.html', context)
     else:
         if User.objects.filter(username=username, is_staff=False):
-            form = ClientForm()
+            form = UserClientForm()
             context = {
                 'username':username,
                 'form':form,
@@ -147,34 +218,6 @@ def validate_twilio_request(func):
 
 
 
-# def checkin(request):
-#     if request.method == 'POST':
-#         print(request.POST)
-#         form = PhoneForm(request.POST or None)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, ('Your phone number has been successfully added to the list!'))
-
-#             phone_list = Phone.objects.filter(is_active=True)
-#             context = {
-#                 'phone_list':phone_list,
-#             }
-
-#             return redirect(checkin)
-#         else:
-#             phone_list = Phone.objects.filter(is_active=True)
-#             context = {
-#                 'form':form,
-#                 'phone_list':phone_list,
-#             }
-#             return render(request, 'text/checkin.html', context)
-
-#     else:
-#         phone_list = Phone.objects.filter(is_active=True)
-#         context = {
-#             'phone_list':phone_list,
-#         }
-#         return render(request, 'text/checkin.html', context)
 
 
 

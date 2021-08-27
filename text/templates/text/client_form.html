@@ -26,7 +26,7 @@
         {% endif %}
 
         <div>
-            <form class="container text-center" method="POST">
+            <form class="container text-center" method="POST" action="{% url 'client_form' username %}">
                 {% csrf_token %}
 
                 <!-- <div class="row mb-3">
@@ -42,7 +42,7 @@
                     <input type="tel" class="form-control" placeholder="Phone Number" name="phone" aria-label="Phone Number" pattern="^[(]{0,1}[0-9]{3}[)]{0,1}[-\s.]{0,1}[0-9]{3}[-\s.]{0,1}[0-9]{4}$" value="{% if form %}{{form.phone.value}}{% endif %}" required>
                 </div> -->
                 {{form.as_p}}
-                <input type="hidden" name="user" value="{% if username %}{{username}}{% endif %}">
+                <input type="hidden" name="client_of" value="{{username}}">
                 <button type="submit" class="btn btn-secondary m-4">SIGN UP</button>
             </form>
 

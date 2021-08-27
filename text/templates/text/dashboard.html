@@ -2,6 +2,31 @@
 {% load static %}
 {% block content %}
 
-<h1>Welcome {{ username }}!</h1>
+<h1>Welcome {{ user.username | title }}!</h1>
+
+<ul>
+    <h2>User</h2>
+    <li>First Name: {{user.first_name}}</li>
+    <li>Last Name: {{user.last_name}}</li>
+    <li>Email: {{user.email}}</li>
+    <a href="{% url 'user_edit_user' %}">Edit User</a>
+
+</ul>
+
+
+<ul>
+    <h2>Custon URL & Phone Number</h2>
+    <li>Custom URL: {{ user_profile.user_url }}</li>
+    <a href="{% url 'user_add_phone' %}">Add Phone Number</a>
+</ul>
+
+<ul>
+    <h2>Client List</h2>
+    {% if client_list %}
+        {% for client in client_list %}
+            <li>{{client.first_name}} {{client.last_name}}: {{client.phone}}</li>
+        {% endfor %}
+    {% endif %}
+</ul>
 
 {% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'text/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="row text-center">
+    <h1>Add Phone</h1>
+</div>
+
+<form class="col-md-6 offset-md-3" action="{% url 'user_add_phone' %}" method="POST">
+    {% csrf_token %}        
+    <input type="text" name="area_code" placeholder="Enter Area Code">
+    <input class="btn btn-primary" type="submit" value="Add Phone Number">
+    <input class="btn btn-secondary" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
+</form>
+
+{% if available_numbers %}
+<ul>
+    {% for number in available_numbers %}
+        <li>{{ number }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% endblock %}
