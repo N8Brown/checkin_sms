@@ -162,11 +162,6 @@ def client_form(request, username):
         form = UserClientForm(request.POST or None)
         if form.is_valid():
             form.save()
-            phone_list = UserClient.objects.filter(is_active=True)
-            context = {
-                'phone_list':phone_list,
-            }
-
             return redirect('client_confirmation')
         else:
             context = {
