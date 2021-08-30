@@ -7,7 +7,6 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django_twilio.decorators import twilio_view
 from functools import wraps
-# from twilio import twiml
 from twilio.request_validator import RequestValidator
 from twilio.rest import Client
 from .forms import UserClientForm, UserRegistrationForm, UserEditUserForm
@@ -15,8 +14,18 @@ from .models import UserClient, UserProfile
 
 import os
 
+# Views that don't require authentication
 
 def home(request):
+    '''
+    Check to see if the request is made by an authenticated user.
+
+    Authenticated users with an "is_staff" status of True get redirected to the Django admin page.
+
+    Authenticated users with an "is_staff" status of False get redirected to the user dashboard view.
+
+    Unauthenticated users will able to view the home page. 
+    '''
     if request.user.is_authenticated:
         if not request.user.is_staff:
             return redirect('user_dashboard')
@@ -35,13 +44,11 @@ def user_register(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
             user = authenticate(username=username, password=password)
-            login(request, user)
-
             user_url = f'https://checkinsms.com/{username.lower()}/signup'
             profile = UserProfile(user=user, user_url=user_url)
             profile.save()
-
-            return redirect('user_dashboard', username.lower())
+            login(request, user)
+            return redirect('user_dashboard')
         else:
             messages.warning(request, ('There is an error...'))
             context = {
@@ -57,7 +64,6 @@ def user_register(request):
 
 
 def user_login(request):
-    
     if request.method == "POST":
         username = request.POST['login_username']
         password = request.POST['login_password']
@@ -83,14 +89,46 @@ def user_logout(request):
     return redirect('home')
 
 
+def client_form(request, username):
+    if request.method == 'POST':
+        form = UserClientForm(request.POST or None)
+        if form.is_valid():
+            form.save()
+            return redirect('client_confirmation')
+        else:
+            context = {
+                'username':username,
+                'form':form,
+            }
+            return render(request, 'text/client_form.html', context)
+    else:
+        if User.objects.filter(username=username, is_staff=False):
+            user = User.objects.get(username=username)
+            form = UserClientForm()
+            context = {
+                'user':user,
+                'username':username,
+                'form':form,
+            }
+            return render(request, 'text/client_form.html', context)
+        else:
+            return redirect('home')
+    
+
+def client_form_confirmation(request):
+    context = {}
+    return render(request, 'text/client_confirmation.html', context)
+
+
+# Views that require authentication
+
 @login_required
 def user_dashboard(request):
     if request.user.is_authenticated:
         if not request.user.is_staff:
             user = User.objects.get(username=request.user.username)
             user_profile = UserProfile.objects.get(user=request.user)
-            client_list = UserClient.objects.filter(client_of=request.user.username)
-
+            client_list = UserClient.objects.filter(client_of=request.user.id)
             context = {
                 'user':user,
                 'user_profile':user_profile,
@@ -99,7 +137,6 @@ def user_dashboard(request):
             return render(request, 'text/dashboard.html', context)
         else:
             return redirect('home')
-
     else:
         return redirect('user_login')
 
@@ -118,75 +155,36 @@ def user_edit_user(request):
                     'form':form,
                 }
                 return render(request, 'text/edit_user.html', context)
-
         else:
-            return redirect('home')
-
+            return redirect('admin/')
     else:
         return redirect('user_login')
 
 
 @login_required
-def user_add_phone(request):
+def user_search_phone(request):
     if request.user.is_authenticated:
-
         if not request.user.is_staff:
             if request.method == 'POST':
                 account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
                 auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
                 client = Client(account_sid, auth_token)
-                local = client.available_phone_numbers('US').local.list(area_code=int(request.POST['area_code']), limit=10)
-
+                local = client.available_phone_numbers('US').local.list(area_code=int(request.POST['area_code']), limit=5)
                 available_numbers = [record.friendly_name for record in local]
-                # for record in local:
-                #     print(record.friendly_name)
                 context = {
                     'available_numbers':available_numbers,
                 }
-
-                return render(request, 'text/add_phone.html', context)
+                return render(request, 'text/search_phone.html', context)
             else:
                 context = {}
-                return render(request, 'text/add_phone.html', context)
+                return render(request, 'text/search_phone.html', context)
         else:
-            return redirect('home')
+            return redirect('admin/')
     else:
         return redirect('user_login')
 
 
-
-
-def client_form(request, username):
-    if request.method == 'POST':
-        print(request.POST)
-        form = UserClientForm(request.POST or None)
-        if form.is_valid():
-            form.save()
-            return redirect('client_confirmation')
-        else:
-            context = {
-                'username':username,
-                'form':form,
-            }
-            return render(request, 'text/client_form.html', context)
-    else:
-        if User.objects.filter(username=username, is_staff=False):
-            form = UserClientForm()
-            context = {
-                'username':username,
-                'form':form,
-            }
-            return render(request, 'text/client_form.html', context)
-        else:
-            return redirect('home')
-    
-
-
-def client_form_confirmation(request):
-    context = {}
-    return render(request, 'text/client_confirmation.html', context)
-
-
+# Twilio specific views
 
 def validate_twilio_request(func):
     """Validates that incoming requests genuinely originated from Twilio"""
@@ -211,11 +209,6 @@ def validate_twilio_request(func):
     return decorated_function
 
 
-
-
-
-
-
 @twilio_view
 # @validate_twilio_request
 def incoming(request):
@@ -223,7 +216,6 @@ def incoming(request):
     print(request.POST)
     user_reply = request.POST.get('Body')
     user_phone = request.POST.get('From')
-
     user = Client.objects.filter(phone=user_phone)
 
     if user:

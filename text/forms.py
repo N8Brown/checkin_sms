@@ -42,7 +42,6 @@ class UserEditUserForm(UserChangeForm):
         fields = ('first_name', 'last_name', 'email')
 
 
-
 class UserClientForm(forms.ModelForm):
     first_name = forms.CharField(max_length=100, widget=TextInput(attrs={'class':'form-control', 'placeholder':'First Name', 'name':'first_name', 'aria-label':'First Name', 'required':'',}), label='')
     last_name = forms.CharField(max_length=100, widget=TextInput(attrs={'class':'form-control', 'placeholder':'Last Name', 'name':'last_name', 'aria-label':'Last Name', 'required':'',}), label='')
@@ -56,5 +55,9 @@ class UserClientForm(forms.ModelForm):
 
     def clean_phone(self):
         phone = self.cleaned_data['phone']
-
         return f'+1{"".join(char for char in phone if char.isdigit())}'
+
+    def clean_client_of(self):
+        client_of = int(self.cleaned_data['client_of'])
+        return User.objects.get(id=client_of)
+    
