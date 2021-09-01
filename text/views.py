@@ -128,6 +128,7 @@ def user_dashboard(request):
         if not request.user.is_staff:
             user = User.objects.get(username=request.user.username)
             user_profile = UserProfile.objects.get(user=request.user)
+            print(bool(user_profile.user_phone))
             client_list = UserClient.objects.filter(client_of=request.user.id)
             context = {
                 'user':user,
@@ -197,7 +198,6 @@ def user_add_phone(request):
                 form = UserAddPhoneForm(request.POST, instance=user_profile)
                 if form.is_valid():
                     form.save()
-                print(request.POST)
                 return redirect('user_dashboard')
             else:
                 return redirect('user_dashboard')

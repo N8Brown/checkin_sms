@@ -29,10 +29,10 @@
         </table>
     {% endif %}
     </div>
-    <form class="col-md-6 offset-md-3" action="{% url 'user_delete_client' client.id %}" method="POST">
+    <form class="" action="{% url 'user_delete_client' client.id %}" method="POST">
         {% csrf_token %}
-        <input type="submit" value="Cancel">
-        <input type="submit" value="Delete">
+        <input class="btn btn-secondary" type="submit" value="Cancel">
+        <input class="btn btn-danger" type="submit" value="Delete">
     </form>
 
 </section>
