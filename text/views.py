@@ -9,7 +9,7 @@ from django_twilio.decorators import twilio_view
 from functools import wraps
 from twilio.request_validator import RequestValidator
 from twilio.rest import Client
-from .forms import UserClientForm, UserRegistrationForm, UserEditUserForm
+from .forms import UserAddPhoneForm, UserClientForm, UserRegistrationForm, UserEditUserForm
 from .models import UserClient, UserProfile
 
 import os
@@ -165,19 +165,62 @@ def user_edit_user(request):
 def user_search_phone(request):
     if request.user.is_authenticated:
         if not request.user.is_staff:
-            if request.method == 'POST':
-                account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
-                auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
-                client = Client(account_sid, auth_token)
-                local = client.available_phone_numbers('US').local.list(area_code=int(request.POST['area_code']), limit=5)
-                available_numbers = [record.friendly_name for record in local]
-                context = {
-                    'available_numbers':available_numbers,
-                }
-                return render(request, 'text/search_phone.html', context)
+            user_profile = UserProfile.objects.get(user=request.user)
+            if user_profile.user_phone:
+                return redirect('user_dashboard')
             else:
-                context = {}
-                return render(request, 'text/search_phone.html', context)
+                if request.method == 'POST':
+                    account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+                    auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+                    client = Client(account_sid, auth_token)
+                    local = client.available_phone_numbers('US').local.list(area_code=int(request.POST['area_code']), limit=5)
+                    available_numbers = [record.friendly_name for record in local]
+                    context = {
+                        'available_numbers':available_numbers,
+                    }
+                    return render(request, 'text/search_phone.html', context)
+                else:
+                    context = {}
+                    return render(request, 'text/search_phone.html', context)
+        else:
+            return redirect('admin/')
+    else:
+        return redirect('user_login')
+
+
+@login_required
+def user_add_phone(request):
+    if request.user.is_authenticated:
+        if not request.user.is_staff:
+            if request.method == 'POST':
+                user_profile = UserProfile.objects.get(user=request.user)
+                form = UserAddPhoneForm(request.POST, instance=user_profile)
+                if form.is_valid():
+                    form.save()
+                print(request.POST)
+                return redirect('user_dashboard')
+            else:
+                return redirect('user_dashboard')
+        else:
+            return redirect('admin/')
+    else:
+        return redirect('user_login')
+
+
+@login_required
+def user_delete_client(request, client_id):
+    if request.user.is_authenticated:
+        if not request.user.is_staff:
+            if request.method == 'POST':
+                client = UserClient.objects.get(pk=client_id)
+                client.delete()
+                return redirect('user_dashboard')
+            else:
+                client = UserClient.objects.get(id=client_id)
+                context = {
+                    'client':client
+                }
+                return render(request, 'text/delete_client.html', context)
         else:
             return redirect('admin/')
     else:

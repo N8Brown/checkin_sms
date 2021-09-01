@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django import forms
 from django.forms import widgets
 from django.forms.widgets import HiddenInput, TextInput
-from .models import UserClient
+from twilio.rest.api.v2010.account import available_phone_number
+from .models import UserClient, UserProfile
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -39,7 +40,19 @@ class UserEditUserForm(UserChangeForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email')
+        fields = ('first_name', 'last_name', 'email',)
+
+
+class UserAddPhoneForm(forms.ModelForm):
+
+    class Meta:
+        model = UserProfile
+        fields = ('user_phone',)
+
+    def clean_user_phone(self):
+        user_phone = self.cleaned_data['user_phone']
+        return f'+1{"".join(char for char in user_phone if char.isdigit())}'
+    
 
 
 class UserClientForm(forms.ModelForm):

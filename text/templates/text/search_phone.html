@@ -7,19 +7,28 @@
     <h1>Add Phone</h1>
 </div>
 
-<form class="col-md-6 offset-md-3" action="{% url 'user_add_phone' %}" method="POST">
-    {% csrf_token %}        
+<form class="col-md-6 offset-md-3" action="{% url 'user_search_phone' %}" method="POST">
+    {% csrf_token %}
+    <h2>Search Available Phone Numbers</h2>        
     <input type="text" name="area_code" placeholder="Enter Area Code">
-    <input class="btn btn-primary" type="submit" value="Add Phone Number">
+    <input class="btn btn-primary" type="submit" value="Search Phone">
     <input class="btn btn-secondary" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
 </form>
 
 {% if available_numbers %}
-<ul>
+<form class="col-md-6 offset-md-3" action="{% url 'user_add_phone' %}" method="POST">
+    {% csrf_token %}
+    <h2>Select Phone Number</h2>
     {% for number in available_numbers %}
-        <li>{{ number }}</li>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="user_phone" value="{{ number }}">
+            <label class="form-check-label" for="available_phone_number">
+            {{ number }}
+            </label>
+        </div>
     {% endfor %}
-</ul>
+    <input class="btn btn-primary" type="submit" value="Add Number">
+</form>
 {% endif %}
 
 {% endblock %}

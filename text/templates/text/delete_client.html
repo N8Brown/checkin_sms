@@ -1,0 +1,41 @@
+{% extends 'text/base.html' %}
+{% load static %}
+{% block content %}
+
+<section >
+    <h2>Delete Client</h2>
+
+    <p>Are you sure you wish to delete the following client? This action can't be undone and the client will have to signup again in order to receive future texts.</p>
+    <div class="overflow-scroll">
+    {% if client %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Active</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                </tr>    
+            </thead>
+            <tbody>
+                    <tr>
+                        <td>{{client.first_name}} {{client.last_name}}</td>
+                        <td>{{client.is_active}}</td>
+                        <td>{{client.phone}}</td>
+                        <td>{{client.email}}</td>
+                    </tr>
+            </tbody>
+            <tfoot></tfoot>
+        </table>
+    {% endif %}
+    </div>
+    <form class="col-md-6 offset-md-3" action="{% url 'user_delete_client' client.id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="Cancel">
+        <input type="submit" value="Delete">
+    </form>
+
+</section>
+
+
+{% endblock %}
