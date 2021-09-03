@@ -68,10 +68,10 @@
             <tbody>
                 {% for client in client_list %}
                     <tr>
-                        <td>{{client.first_name}} {{client.last_name}}</td>
-                        <td>{{client.is_active}}</td>
-                        <td>{{client.phone}}</td>
-                        <td>{{client.email}}</td>
+                        <td class="align-middle">{{client.first_name}} {{client.last_name}}</td>
+                        <td class="align-middle">{{client.is_active}}</td>
+                        <td class="align-middle">{{client.phone}}</td>
+                        <td class="align-middle">{{client.email}}</td>
                         <td class="text-center align-middle"><a class="btn btn-danger" href="{% url 'user_delete_client' client.id %}">x</a></td>
                     </tr>
                 {% endfor %}
