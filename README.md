@@ -1,12 +1,4 @@
-# Daily Check-in Text App
+# Check-In SMS
+Check-In SMS is an automated text messaging platform that allows recruiters to check in with their clients at a desired frequency. Client replies are then sent to the recruiter via email. 
 
-## CORE FEATURES
-* User registration/opt-in form
-    * First Name
-    * Last Name
-    * Email address
-    * Phone number
-    * Is Active (true/not searching for job)
-* Check-in text message sent at user selected frequency
-* Text replies returned to Taylor in email form
-
+The platform is built on the Django framework and makes use of the Twilio API. 

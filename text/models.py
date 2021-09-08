@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+import secrets, random
+
 
 
 class UserProfile(models.Model):
@@ -26,3 +28,24 @@ class UserClient(models.Model):
 
     def __str__(self):
         return self.phone
+
+
+class Registration(models.Model):
+    invite_required = models.BooleanField(default=True)
+
+
+def invite_code_generator(size=12, chars='abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'):
+        return ''.join(random.choice(chars) for _ in range(size))
+
+
+class RegistrationInviteCode(models.Model):
+    invite_code = models.CharField(max_length=12, unique=True, default=invite_code_generator())
+
+    # def __init__(self):
+    #     super(RegistrationInviteCode, self).__init__()
+    #     self.invite_code = ''.join(secrets.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(12))
+
+    def __str__(self):
+        return self.invite_code
+
+    
