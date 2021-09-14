@@ -1,9 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-import secrets, random
-
-
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -33,17 +30,16 @@ class UserClient(models.Model):
 class Registration(models.Model):
     invite_required = models.BooleanField(default=True)
 
-
-def invite_code_generator(size=12, chars='abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'):
-        return ''.join(random.choice(chars) for _ in range(size))
+    def __str__(self):
+        return f'Invite Code Required: {self.invite_required}'
 
 
 class RegistrationInviteCode(models.Model):
-    invite_code = models.CharField(max_length=12, unique=True, default=invite_code_generator())
+    invite_code = models.CharField(max_length=12, unique=True)
+    is_used = models.BooleanField(default=False)
 
-    # def __init__(self):
-    #     super(RegistrationInviteCode, self).__init__()
-    #     self.invite_code = ''.join(secrets.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(12))
+    class Meta:
+        verbose_name_plural = 'Registration Invite Codes'
 
     def __str__(self):
         return self.invite_code
