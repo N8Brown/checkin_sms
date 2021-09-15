@@ -7,44 +7,11 @@
     <h1>Register</h1>
 </div>
 
-<!-- <div class="row text-center">
-    <p>Registration will be open soon. Please check back later.</p>
-</div> -->
 
 <form class="col-md-6 offset-md-3" action="{% url 'user_register' %}" method="POST">
-    {% csrf_token %}
-
-    <!-- {% if form.errors %}
-        <div class="alert alert-warning alert-dismissible" role="alert">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            {% for field in form %}
-                {% if field.errors  %}
-                    {{ field.errors }}
-                {% endif %}
-            {% endfor %}
-        </div>
-    {% endif %} -->
-        
+    {% csrf_token %}        
     {{ form.as_p }}
     <input class="btn btn-primary" type="submit" value="Register">
-
-    <!-- <div class="mb-3">
-        <input type="text" class="form-control" name="username" placeholder="Username">
-    </div>
-    <div class="mb-3">
-        <input type="text" class="form-control" name="first_name" placeholder="First Name">
-    </div>
-    <div class="mb-3">
-        <input type="text" class="form-control" name="last_name" placeholder="Last Name">
-    </div>
-    <div class="mb-3">
-        <input type="password" class="form-control" name="password1" placeholder="Password">
-    </div>
-    <div class="mb-3">
-        <input type="password" class="form-control" name="password2" placeholder="Confirm Password">
-    </div>
-    <button type="submit" class="btn btn-primary">Login</button> -->
-  
 </form>
 
 {% endblock %}

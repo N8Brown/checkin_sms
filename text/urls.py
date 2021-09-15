@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.urls import path
-from os import name
 from . import views
 
 urlpatterns = [

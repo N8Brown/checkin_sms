@@ -4,21 +4,24 @@
 {% block content %}
 
 <div class="row text-center">
-    <h1>Add Phone</h1>
 </div>
 
-<form class="col-md-6 offset-md-3" action="{% url 'user_search_phone' %}" method="POST">
+<form class="col-md-6 offset-md-3 mb-5" action="{% url 'user_search_phone' %}" method="POST">
     {% csrf_token %}
-    <h2>Search Available Phone Numbers</h2>        
-    <input type="text" name="area_code" placeholder="Enter Area Code">
-    <input class="btn btn-primary" type="submit" value="Search Phone">
-    <input class="btn btn-secondary" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
+    <h1>Add Phone Number</h1>
+
+    <p>Search for available phone numbers by entering the area code you want the phone number to be based out of.</p>        
+    <input class="form-control" type="text" name="area_code" placeholder="Enter Area Code">
+    <input class="btn btn-primary mt-3 me-2" type="submit" value="Search Phone">
+    <input class="btn btn-secondary mt-3" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
 </form>
 
 {% if available_numbers %}
 <form class="col-md-6 offset-md-3" action="{% url 'user_add_phone' %}" method="POST">
     {% csrf_token %}
-    <h2>Select Phone Number</h2>
+    <h2 class="h3">Available Phone Numbers</h2>
+    <p>Select a phone number from the list of available numbers below to add it to your account.</p>
+    <p>This will be the phone number used to send automated text messages to your clients.</p>
     {% for number in available_numbers %}
         <div class="form-check">
             <input class="form-check-input" type="radio" name="user_phone" value="{{ number }}">
@@ -27,7 +30,7 @@
             </label>
         </div>
     {% endfor %}
-    <input class="btn btn-primary" type="submit" value="Add Number">
+    <input class="btn btn-primary mt-3" type="submit" value="Add Number">
 </form>
 {% endif %}
 

@@ -44,5 +44,3 @@ class RegistrationInviteCode(models.Model):
 
     def __str__(self):
         return self.invite_code
-
-    
