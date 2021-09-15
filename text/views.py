@@ -9,8 +9,8 @@ from django_twilio.decorators import twilio_view
 from functools import wraps
 from twilio.request_validator import RequestValidator
 from twilio.rest import Client
-from .forms import UserAddPhoneForm, UserClientForm, UserRegistrationForm, UserEditUserForm
-from .models import UserClient, UserProfile
+from .forms import UserAddPhoneForm, UserClientForm, UserEditUserForm, UserRegistrationForm 
+from .models import Registration, RegistrationInviteCode, UserClient, UserProfile
 
 import os
 
@@ -181,8 +181,42 @@ def user_search_phone(request):
                     }
                     return render(request, 'text/search_phone.html', context)
                 else:
-                    context = {}
-                    return render(request, 'text/search_phone.html', context)
+                    if Registration.objects.filter().last().invite_required:
+                        if RegistrationInviteCode.objects.filter(redeemed_by=request.user.username):
+                            context = {}
+                            return render(request, 'text/search_phone.html', context)
+                        else:
+                            return redirect('user_invitation')
+                    else:
+                        context = {}
+                        return render(request, 'text/search_phone.html', context)
+        else:
+            return redirect('admin/')
+    else:
+        return redirect('user_login')
+
+
+@login_required
+def user_invitation(request):
+    if request.user.is_authenticated:
+        if not request.user.is_staff:
+            if request.method == 'POST':
+                invite_code = RegistrationInviteCode.objects.filter(invite_code=request.POST['invite_code'], is_used=False)
+                if invite_code:
+                    invite_code[0].is_used = True
+                    invite_code[0].redeemed_by = request.user.username
+                    invite_code[0].save()
+                    return redirect('user_search_phone')
+                else:
+                    messages.warning(request, ('The invitation code that was entered is invalid. Please try again.'))
+                    context = {
+                        'invite_code':request.POST['invite_code'],
+                    }
+                    return render(request, 'text/invitation_code.html', context)
+
+            else:
+                context = {}
+                return render(request, 'text/invitation_code.html', context)
         else:
             return redirect('admin/')
     else:
@@ -198,6 +232,8 @@ def user_add_phone(request):
                 form = UserAddPhoneForm(request.POST, instance=user_profile)
                 if form.is_valid():
                     form.save()
+                # Add and else statement for error handling
+
                 return redirect('user_dashboard')
             else:
                 return redirect('user_dashboard')

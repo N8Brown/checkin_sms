@@ -4,7 +4,7 @@ from django import forms
 # from django.forms import widgets
 from django.forms.widgets import HiddenInput, TextInput
 # from twilio.rest.api.v2010.account import available_phone_number
-from .models import UserClient, UserProfile
+from .models import Registration, RegistrationInviteCode, UserClient, UserProfile
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -52,7 +52,6 @@ class UserAddPhoneForm(forms.ModelForm):
         user_phone = self.cleaned_data['user_phone']
         return f'+1{"".join(char for char in user_phone if char.isdigit())}'
     
-
 
 class UserClientForm(forms.ModelForm):
     first_name = forms.CharField(max_length=100, widget=TextInput(attrs={'class':'form-control', 'placeholder':'First Name', 'name':'first_name', 'aria-label':'First Name', 'required':'',}), label='')

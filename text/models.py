@@ -37,6 +37,7 @@ class Registration(models.Model):
 class RegistrationInviteCode(models.Model):
     invite_code = models.CharField(max_length=12, unique=True)
     is_used = models.BooleanField(default=False)
+    redeemed_by = models.CharField(max_length=100, blank=True)
 
     class Meta:
         verbose_name_plural = 'Registration Invite Codes'
