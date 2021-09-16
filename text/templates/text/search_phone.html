@@ -8,18 +8,18 @@
 
 <form class="col-md-6 offset-md-3 mb-5" action="{% url 'user_search_phone' %}" method="POST">
     {% csrf_token %}
-    <h1>Add Phone Number</h1>
+    <h1 class="mb-4">Add Phone Number</h1>
 
-    <p>Search for available phone numbers by entering the area code you want the phone number to be based out of.</p>        
+    <p class="mb-4">Search for available phone numbers by entering the area code you want the phone number to be based out of.</p>        
     <input class="form-control" type="text" name="area_code" placeholder="Enter Area Code">
-    <input class="btn btn-primary mt-3 me-2" type="submit" value="Search Phone">
-    <input class="btn btn-secondary mt-3" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
+    <input class="btn btn-primary mt-4 me-2" type="submit" value="Search Phone">
+    <input class="btn btn-secondary mt-4" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
 </form>
 
 {% if available_numbers %}
 <form class="col-md-6 offset-md-3" action="{% url 'user_add_phone' %}" method="POST">
     {% csrf_token %}
-    <h2 class="h3">Available Phone Numbers</h2>
+    <h2 class="h3 mb-4">Available Phone Numbers</h2>
     <p>Select a phone number from the list of available numbers below to add it to your account.</p>
     <p>This will be the phone number used to send automated text messages to your clients.</p>
     {% for number in available_numbers %}
@@ -30,7 +30,7 @@
             </label>
         </div>
     {% endfor %}
-    <input class="btn btn-primary mt-3" type="submit" value="Add Number">
+    <input class="btn btn-primary mt-4" type="submit" value="Add Number">
 </form>
 {% endif %}
 

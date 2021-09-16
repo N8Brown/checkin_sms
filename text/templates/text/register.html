@@ -4,14 +4,14 @@
 {% block content %}
 
 <div class="row text-center">
-    <h1>Register</h1>
+    <h1 class="mb-4">Register</h1>
 </div>
 
 
 <form class="col-md-6 offset-md-3" action="{% url 'user_register' %}" method="POST">
     {% csrf_token %}        
     {{ form.as_p }}
-    <input class="btn btn-primary" type="submit" value="Register">
+    <input class="btn btn-primary mt-4" type="submit" value="Register">
 </form>
 
 {% endblock %}

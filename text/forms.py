@@ -35,7 +35,10 @@ class UserRegistrationForm(UserCreationForm):
 
 class UserEditUserForm(UserChangeForm):
     password = None
-
+    first_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class':'form-control',}), label='')
+    last_name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class':'form-control',}), label='')
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control',}), label='')
+    
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email',)

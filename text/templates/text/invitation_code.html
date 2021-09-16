@@ -3,8 +3,6 @@
 
 {% block content %}
 
-<h1>Enter Your Invitation Code</h1>
-
 {% if messages %}
 {% for message in messages %}
     {% if message.tags == 'success' %}
@@ -20,14 +18,13 @@
 {% endfor %}
 {% endif %}
 
-
-
-<form class="col-md-6 offset-md-3" action="{% url 'user_invitation' %}" method="POST">
+<form class="col-md-6 offset-md-3 mb-5" action="{% url 'user_invitation' %}" method="POST">
     {% csrf_token %}
-    <h2>Enter Invitation Code</h2>        
-    <input type="text" name="invite_code" placeholder="Invitation Code" {% if invite_code %} value="{{invite_code}}" {% endif %}>
-    <input class="btn btn-primary" type="submit" value="Submit">
-    <input class="btn btn-secondary" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
+    <h1 class="mb-4">Enter Invite Code</h1>
+    <p class="mb-4">The ability to add a phone number to your account and utilize the automated text messaging features is currently open to users by invite only. If you were provided an invite code, please enter it below to redeem.</p>        
+    <input class="form-control" type="text" name="invite_code" placeholder="Invitation Code" {% if invite_code %} value="{{invite_code}}" {% endif %}>
+    <input class="btn btn-primary mt-4 me-3" type="submit" value="Submit">
+    <input class="btn btn-secondary mt-4" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">  
 </form>
 
 
