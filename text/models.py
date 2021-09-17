@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from datetime import date
 
 
 class UserProfile(models.Model):
@@ -7,6 +8,9 @@ class UserProfile(models.Model):
     user_url = models.CharField(max_length=200)
     user_phone_limit = models.IntegerField(default=1)
     user_phone = models.CharField(max_length=14, blank=True)
+    message_frequency = models.IntegerField(default=1)
+    message_count = models.IntegerField(default=0)
+    message_limit = models.IntegerField(default=1000)
 
     def __str__(self):
         return self.user.username
@@ -19,6 +23,9 @@ class UserClient(models.Model):
     phone = models.CharField(max_length=14)
     email = models.CharField(max_length=254)
     is_active = models.BooleanField(default=True)
+    signed_up = models.DateField(blank=True, default=date.today)
+    last_message_received = models.DateField(blank=True, null=True)
+    last_message_reply = models.DateField(blank=True, null=True)
 
     class Meta:
         unique_together = [['phone', 'client_of'],]
