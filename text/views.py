@@ -9,7 +9,7 @@ from django_twilio.decorators import twilio_view
 from functools import wraps
 from twilio.request_validator import RequestValidator
 from twilio.rest import Client
-from .forms import UserAddPhoneForm, UserClientForm, UserEditUserForm, UserRegistrationForm 
+from .forms import UserAddPhoneForm, UserClientForm, UserEditMessageForm, UserEditUserForm, UserRegistrationForm 
 from .models import Registration, RegistrationInviteCode, UserClient, UserProfile
 
 import os
@@ -156,6 +156,28 @@ def user_edit_user(request):
                     'form':form,
                 }
                 return render(request, 'text/edit_user.html', context)
+        else:
+            return redirect('admin/')
+    else:
+        return redirect('user_login')
+
+
+@login_required
+def user_edit_message(request):
+    if request.user.is_authenticated:
+        if not request.user.is_staff:
+            if request.method == 'POST':
+                user_profile = UserProfile.objects.get(user=request.user)
+                form = UserEditMessageForm(request.POST, instance=user_profile,)
+                form.save()
+                return redirect('user_dashboard')
+            else:
+                user_profile = UserProfile.objects.get(user=request.user)
+                form = UserEditMessageForm(instance=user_profile)
+                context = {
+                    'form':form,
+                }
+                return render(request, 'text/edit_message.html', context)
         else:
             return redirect('admin/')
     else:

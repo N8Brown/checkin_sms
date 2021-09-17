@@ -44,6 +44,19 @@ class UserEditUserForm(UserChangeForm):
         fields = ('first_name', 'last_name', 'email',)
 
 
+class UserEditMessageForm(forms.ModelForm):
+    message_frequency = forms.IntegerField(widget=forms.NumberInput(attrs={'class':'form-control',}), label='')
+    message = forms.Field(widget=forms.Textarea(attrs={'class':'form-control',}), label='')
+
+    class Meta:
+        model = UserProfile
+        fields = ('message_frequency', 'message',)
+
+    # def clean_message_frequency(self):
+    #     message_frequency = self.cleaned_data['message_frequency']
+    #     return int(message_frequency)
+
+
 class UserAddPhoneForm(forms.ModelForm):
     class Meta:
         model = UserProfile

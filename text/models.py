@@ -11,6 +11,7 @@ class UserProfile(models.Model):
     message_frequency = models.IntegerField(default=1)
     message_count = models.IntegerField(default=0)
     message_limit = models.IntegerField(default=1000)
+    message = models.TextField(blank=True)
 
     def __str__(self):
         return self.user.username
