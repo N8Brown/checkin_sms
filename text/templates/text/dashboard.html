@@ -51,21 +51,47 @@
 </section>
 
 <section class="mb-5">
-    <h2 class="h3 pb-4">Message Settings</h2>
+    <h2 class="h3 pb-4">Text Messages</h2>
     <div class="row mb-3">
-        <label for="message_frequency" class="col-sm-2 col-form-label">Frequency</label>
+        <label for="message_limit" class="col-sm-2 col-form-label">Limit</label>
         <div class="col-sm-10 col-md-6">
-            <input class="form-control" type="text" value="{{user_profile.message_frequency}}" aria-label="message_frequency" name="message_frequency" readonly>
+            <input class="form-control" type="text" value="{{user_profile.message_limit}}" aria-label="message_limit" name="message_limit" readonly>
         </div>
     </div>
     <div class="row mb-3">
-        <label for="message" class="col-sm-2 col-form-label">Message</label>
+        <label for="message_count" class="col-sm-2 col-form-label">Count</label>
+        <div class="col-sm-10 col-md-6 d-flex align-items-center">
+            <input class="form-control" type="text" value="{{user_profile.message_count}}" aria-label="message_count" name="message_count" readonly>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="message_remaining" class="col-sm-2 col-form-label">Remaining</label>
         <div class="col-sm-10 col-md-6">
-            <textarea class="form-control" name="message" id=""  rows="10" readonly>{{user_profile.message }}</textarea>
+            <input class="form-control" type="text" value="{{messages_remaining}}" aria-label="message_remaining" name="message_remaining" readonly>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="message_frequency" class="col-sm-2 col-form-label">Frequency</label>
+        <div class="col-sm-10 col-md-6 d-flex align-items-center">
+            <p class="mb-0 me-3">Every</p> 
+            <input class="form-control d-inline w-auto flex-grow-1" type="text" value="{{user_profile.message_frequency}}" aria-label="message_frequency" name="message_frequency" readonly>
+            <p class="mb-0 ms-3">days</p>
         </div>
     </div>
     <div class="row mb-3 pt-3">
-        <a href="{% url 'user_edit_message' %}">Edit Message Settings</a>
+        <a href="{% url 'user_edit_message' %}">Change Frequency</a>
+    </div>
+
+    <div class="row mb-3 pt-4">
+        <h3 class="h5 pb-3">Sample Text Message</h3>
+        <div>
+            <div class="col-sm-10 col-md-6 px-3 py-2 rounded-3" style="background-color: #e9ecef; border: 1px solid #ced4da">
+                <p>Hi {Client's Name},</p>
+                <p>This is {{user.first_name}} with your scheduled check-in to see if you are still actively searching the job market.</p>
+                <p>Please reply YES or NO to make sure your status up to date.</p>
+                <p>Reply STOP if you no longer wish to receive these scheduled check-ins.</p>
+            </div>    
+        </div>
     </div>
     
 </section>

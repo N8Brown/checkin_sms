@@ -45,12 +45,12 @@ class UserEditUserForm(UserChangeForm):
 
 
 class UserEditMessageForm(forms.ModelForm):
-    message_frequency = forms.IntegerField(widget=forms.NumberInput(attrs={'class':'form-control',}), label='')
-    message = forms.Field(widget=forms.Textarea(attrs={'class':'form-control',}), label='')
+    message_frequency = forms.IntegerField(widget=forms.NumberInput(attrs={'class':'form-control d-inline w-auto flex-grow-1',}), label='')
+    # message = forms.Field(widget=forms.Textarea(attrs={'class':'form-control',}), label='')
 
     class Meta:
         model = UserProfile
-        fields = ('message_frequency', 'message',)
+        fields = ('message_frequency',)
 
     # def clean_message_frequency(self):
     #     message_frequency = self.cleaned_data['message_frequency']

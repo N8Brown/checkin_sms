@@ -31,8 +31,8 @@
     </div>
     <form class="" action="{% url 'user_delete_client' client.id %}" method="POST">
         {% csrf_token %}
-        <input class="btn btn-secondary" type="submit" value="Cancel">
-        <input class="btn btn-danger" type="submit" value="Delete">
+        <input class="btn btn-secondary mt-4 me-2" type="submit" value="Cancel" formaction="{% url 'user_dashboard' %}">
+        <input class="btn btn-danger mt-4" type="submit" value="Delete">
     </form>
 
 </section>

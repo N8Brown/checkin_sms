@@ -128,12 +128,13 @@ def user_dashboard(request):
         if not request.user.is_staff:
             user = User.objects.get(username=request.user.username)
             user_profile = UserProfile.objects.get(user=request.user)
-            print(bool(user_profile.user_phone))
             client_list = UserClient.objects.filter(client_of=request.user.id)
+            messages_remaining = user_profile.message_limit - user_profile.message_count
             context = {
                 'user':user,
                 'user_profile':user_profile,
                 'client_list':client_list,
+                'messages_remaining':messages_remaining,
             }
             return render(request, 'text/dashboard.html', context)
         else:
